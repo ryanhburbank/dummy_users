@@ -8,33 +8,31 @@ post '/user' do
   @user = User.authenticate(params[:user][:email], params[:user][:password])
   if @user
     session[:id] = @user.id
-    redirect to ("/secret")
+    redirect to ("/secret")  
   else
-    #how do we make this a popup w/o using flash gem
-    error("password/email combination wrong/nonexistant") 
-    rest(2.0)
-    redirect to ("/")
+    @error = "password/email combination wrong/nonexistant"
+    erb :index
   end
-  #how does the session part work here
-  #redirect user to '/secret'
 end
 
 post '/create/user' do
-  #create user on this route
-  #return the user to '/'
+  @user = User.new(:email => params[:user][:email],
+                   :password => params[:user][:password])
+  @user.save
+  redirect ("/")
 end
 
 get '/secret' do
   if session[:id]
     erb :secret
   else
-    alert("you must be logged in to view this page")
-    redirect to ("/")
+    @error = "you must be logged in to view the secret page"
+    erb :index
   end
 end
  
 post '/secret' do
-  #this path sets the session.id = nil
-  #redirects to '/' when clicked
+  session[:id] = nil
+  redirect ("/")
 end
  #want to try the use you created in console?
